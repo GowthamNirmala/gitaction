@@ -15,14 +15,26 @@ permissions:
 
 jobs:
   # Single deploy job since we're just deploying
+  build: 
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: docker image build
+        run: ls -lha && pwd && sudo docker build -t myimage .
+
+  test: 
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4 
+      - name: list docker image
+        run: sudo docker image ls 
+
   deploy:
     runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: install webserver
-        run: sudo apt-get install nginx -y
-
-      - name: copy web contect
-        run: sudo cp index.html /var/www/html/
+      - name: Run Docker container
+        run: sudo docker run -d -p 80:80 myimage
